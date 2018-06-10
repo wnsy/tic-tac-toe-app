@@ -30,8 +30,15 @@ class Board extends React.Component {
     };
   }
 
+  // Pass down a function from Board -> Square that gets called when
+  // the square is clicked
   renderSquare(i) {
-    return <Square value={this.state.squares[i]} />;
+    return (
+      <Square
+        value={this.state.squares[i]}
+        onClick={() => this.handleClick(i)}
+     />
+   );
   }
 
   render() {
