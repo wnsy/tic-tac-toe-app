@@ -4,7 +4,7 @@ import './index.css'
 
 class Square extends React.Component {
   constructor(props) {
-    super(props)
+    super(props) //need to explicitly call super(); when defining the constructor of a subcls when defining the constructor of a subcls
     this.state = {
       value: null,
     };
@@ -23,8 +23,15 @@ class Square extends React.Component {
 }
 
 class Board extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      squares: Array(9).fill(null),
+    };
+  }
+
   renderSquare(i) {
-    return <Square value={i} />;
+    return <Square value={this.state.squares[i]} />;
   }
 
   render() {
