@@ -23,42 +23,20 @@ earlier. You can pass location of each square into the click handler so that
 we still know which square was clicked.
 */
 class Board extends React.Component {
-  handleClick(i) {
-    const squares = this.state.squares.slice(); //call .slice() to copy the sq arrays instead of mutating the existing array
-    if (calculateWinner(squares) || squares[i]) {
-      return;
-    }
-    squares[i] = this.state.xIsNext ? 'X' : 'O';
-    this.setState({
-      squares: squares,
-      xIsNext: !this.state.xIsNext,
-    });
-  }
-
   // Pass down a function from Board -> Square that gets called when
   // the square is clicked
   renderSquare(i) {
     return (
       <Square
         value={this.props.squares[i]}
-        onClick={() => this.props.onClick(i)} // 3. Board passed onClick to Square so when called, it runs this.handleClick(i) on the Board
-      />
+        onClick={() => this.props.onClick(i)}
+      /> // 3. Board passed onClick to Square so when called, it runs this.handleClick(i) on the Board
     );
   }
 
   render() {
-    const winner = calculateWinner(this.state.squares);
-    let status;
-
-    if (winner) {
-      status = 'Winner: ' + winner;
-    } else {
-      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-    }
-
     return (
       <div>
-        <div className="status">{status}</div>
         <div className="board-row">
           {this.renderSquare(0)}
           {this.renderSquare(1)}
@@ -84,20 +62,55 @@ class Game extends React.Component {
     super(props);
     this.state = {
       history: [{
-        squares: Array(9).fill(null),
+        squares: Array(9).fill(null)
       }],
-      xIsNext: true,
+      xIsNext: true
     };
   }
 
+
+  handleClick(i) { // push a new entry onto the stack by concatenating the new history
+    // entry to make a new history array
+    const history = this.state.history;
+    const current = history[history.length - 1];
+    const squares = current.squares.slice(); //call .slice() to copy the sq arrays instead of mutating the existing array
+    if (calculateWinner(squares) || squares[i]) {
+      return;
+    }
+    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    this.setState({
+      history: history.concat([{
+        squares: squares
+      }]),
+      xIsNext: !this.state.xIsNext,
+    });
+  }
+
+  /*
+  Should look at the most recent history entry and can take over calculating the game status
+  */
   render() {
+    const history = this.state.history;
+    const current = history[history.length - 1];
+    const winner = calculateWinner(current.squares);
+
+    let status;
+    if (winner) {
+      status = 'Winner: ' + winner;
+    } else {
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    }
+
     return (
       <div className="game">
         <div className="game-board">
-          <Board />
+          <Board
+            squares={current.squares}
+            onClick={(i) => this.handleClick(i)}
+          />
         </div>
         <div className="game-info">
-          <div>{/* status */}</div>
+          <div>{status}</div>
           <ol>{/* TODO */}</ol>
         </div>
       </div>
@@ -132,7 +145,4 @@ function calculateWinner(squares) {
     }
   }
   return null;
-
-
-
 }
