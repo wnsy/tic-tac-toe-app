@@ -24,6 +24,12 @@ class Square extends React.Component {
       };
     }
 
+    handleClick(i) {
+      const squares = this.state.squares.slice(); //call .slice() to copy the sq arrays instead of mutating the existing array
+      squares[i] = 'X';
+      this.setState({squares: squares});
+    }
+
     // Pass down a function from Board -> Square that gets called when
     // the square is clicked
     renderSquare(i) {
