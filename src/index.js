@@ -16,18 +16,18 @@ function Square(props) {
   );
 }
 
+/*
+change Board so that it takes `squares` via props and has its own
+`onClick` prop specified by Game, like the transformation we made sure Square
+earlier. You can pass location of each square into the click handler so that
+we still know which square was clicked.
+*/
 class Board extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      squares: Array(9).fill(null), // 2. event handler calls this.props.onClick(). Sq. props were specified by the Board
-      xIsNext: true, //each time we move, we toggle xIsNext by flipping the boolean value and saving the state, update Board's handleClick function to
-      //flip the value of xIsNext
-    };
-  }
-
   handleClick(i) {
     const squares = this.state.squares.slice(); //call .slice() to copy the sq arrays instead of mutating the existing array
+    if (calculateWinner(squares) || squares[i]) {
+      return;
+    }
     squares[i] = this.state.xIsNext ? 'X' : 'O';
     this.setState({
       squares: squares,
@@ -40,8 +40,8 @@ class Board extends React.Component {
   renderSquare(i) {
     return (
       <Square
-        value={this.state.squares[i]}
-        onClick={() => this.handleClick(i)} // 3. Board passed onClick to Square so when called, it runs this.handleClick(i) on the Board
+        value={this.props.squares[i]}
+        onClick={() => this.props.onClick(i)} // 3. Board passed onClick to Square so when called, it runs this.handleClick(i) on the Board
       />
     );
   }
@@ -55,7 +55,7 @@ class Board extends React.Component {
     } else {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
-    
+
     return (
       <div>
         <div className="status">{status}</div>
@@ -80,6 +80,16 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      history: [{
+        squares: Array(9).fill(null),
+      }],
+      xIsNext: true,
+    };
+  }
+
   render() {
     return (
       <div className="game">
@@ -122,4 +132,7 @@ function calculateWinner(squares) {
     }
   }
   return null;
+
+
+
 }
